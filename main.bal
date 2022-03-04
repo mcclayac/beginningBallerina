@@ -1,6 +1,7 @@
 import ballerina/io;
 import ballerina/lang.'float as floats;
 import ballerina/random;
+import ballerina/os;
 #import ints
 #import ballerina/math;
 #import ballerina/math;
@@ -13,6 +14,16 @@ public function main() {
 
     // chapter2();
     chapter3();
+
+    chapter4();
+
+
+}
+
+public function chapter4() {
+    io:println("\n\n");
+    io:println("------------------------------");
+    io:println("----- chapter 4 --------------n\n");
 
 
 }
@@ -29,7 +40,279 @@ public function chapter3() {
     definingtNewTypes();
 
     maps();
+    records();
+    objects();
+    referenceTypesValueTypes();
+    deapAndExactEquality();
+    consantsAnsSignletonTypes();
 
+    // getEnvirontment();
+
+}
+
+const PI = 3.1415;
+const float PI2 = 3.1415;
+
+const ON = "ON";
+const OFF = "OFF";
+type SWITCH_STATUS ON|OFF;
+
+// Signleon
+type IO_ERROR "IO_ERROR";
+
+
+public function consantsAnsSignletonTypes() {
+    io:println("\n\n----- chapter 3 - consantsAnsSignletonTypes --------------\n\n");
+
+    SWITCH_STATUS livingRoomSwitch = ON;  // Ojly allowed two states ON and OFF
+
+    io:println("Libing Room Status :", livingRoomSwitch);
+    io:print("IO Error :", IO_ERROR);
+
+}
+
+public function deapAndExactEquality() {
+    io:println("\n\n----- chapter 3 - deapAndExactEquality --------------\n\n");
+
+    map<string> m1 = { "firsName" : "jack", "lastName" : "Johnson"};
+    map<string> m2 = { "firsName" : "jack", "lastName" : "Johnson"};
+    map<string> m3 = { "firsName" : "Krisin", "lastName" : "Smith"};
+
+    io:println(m1 === m2);   // this is false = memory comparrison
+    io:println(m1 == m2);    // this is true = field comparriston
+    io:println(m2 == m3);  // this is false names are diffferent
+
+}
+
+
+
+public function referenceTypesValueTypes() {
+    io:println("\n\n----- chapter 3 - referenceTypesValueTypes --------------\n\n");
+
+    map<int> ages = {};
+    ages["sunil"] = 25;
+    int count = 10;
+    io:println("Ages before update: ", ages);
+    io:println("Count before update: ", count);
+
+    // reference Type
+    updateAges(ages);
+
+    // value type
+    updateCount(count);
+
+    // After
+    io:println("Ages after update: ", ages);
+    io:println("Count after update: ", count);
+
+    io:println("\n\n");
+
+}
+
+public function updateAges(map<int> argAges) {
+    argAges["sunil"] = 30;
+    io:println("Ages in updateAges :", argAges);
+}
+
+public function updateCount (int argCount) {
+    int myCount = argCount;
+    myCount = 20;
+    io:println("Count in updateCount :", myCount); 
+}
+
+
+
+class ExamResult6  {
+
+    private string name;
+    private int mathScore;
+    private int physicsScore;
+    private int chemistryScore;
+
+    public function init(string name, int mathScore, int physicsScore, int chemistryScore) {
+        self.name = name;
+        self.mathScore = mathScore;
+        self.physicsScore = physicsScore;
+        self.chemistryScore = chemistryScore;
+    }
+
+    public function getAverage() returns int {
+        return ( self.mathScore + self.physicsScore + self.chemistryScore) / 3;
+    }
+}
+
+
+
+public function objects() {
+    io:println("\n\n----- chapter 3 - Classes --------------\n\n");
+
+      io:println("Program objects");
+    // Must instantiate class to make an object
+    ExamResult6 result6 = new ExamResult6("Tony", 77,88,99);
+    io:println("results6 =", result6);
+    int average = result6.getAverage();
+    io:println("Average  =", average);
+    
+}
+
+
+type ExamResult1 record {
+    string name;
+    int mathScores;
+    int physicsScore;
+    int chemistryScore;
+};
+
+// Record with default value and optional field
+type ExamResult3 record {
+    string name = "Jane Doe";
+    int mathsScore;
+    int physicsScore;
+    int chemistryScore?;
+};
+
+// Closed Record with default value and optional field
+type ExamResult4 record {|
+    string name = "Jane Doe";
+    int mathsScore;
+    int physicsScore;
+    int chemistryScore?;
+|};
+
+// Closed Record with default value and optional field
+// with rest field of type int
+type ExamResult5 record {|
+    string name = "Jane Doe";
+    int mathsScore;
+    int physicsScore;
+    int chemistryScore?;
+    int...;
+|};
+
+type Person record {
+    string name;
+    int age;
+};
+type Student record {
+    string name;
+    int age;
+    string studentId;
+};
+
+
+
+public function records() {
+    io:println("----- chapter 3 - records --------------\n\n");
+
+    io:println("\nExamRecord1 Example:");
+    ExamResult1 results1 ={
+        name: "Tony",
+        mathScores: 95,
+        physicsScore: 78,
+        chemistryScore: 88
+    };
+
+    io:println("Results1 record");
+    io:println(results1);
+
+    io:println("\nExamRecord3 Example:");
+    ExamResult3 results3 = {
+        mathsScore: 88,
+        physicsScore: 23
+    };
+
+    // using default value for name
+    // not publishing a chemistryScroe because it is optional
+    io:println("using default value for name");
+    io:println("not publishing a chemistryScroe because it is optional");
+    io:println("Results3 record");
+    io:println(results3);
+    int? chemistryScore = results3?.chemistryScore;
+    if chemistryScore is int {
+        io:println("chemistry Score :", chemistryScore);
+    } else {
+        io:println("No chemistry Score is present");
+    }
+
+    // Using Default open record to define new fields
+    results3["age"] = 52;
+    io:println(results3);
+    anydata age = results3["age"];
+    if age is int {
+        io:println("the listed age is :", age);
+    } else {
+        io:println("I have no idea what the age is");
+    }
+
+     io:println("\nExamRecord4 Example:");
+    ExamResult4 results4 = {
+        mathsScore: 88,
+        physicsScore: 23
+    };
+    io:println("using default value for name");
+    io:println("not publishing a chemistryScroe because it is optional");
+    io:println("Results4 record");
+    io:println(results4);
+
+    // This is a closed recordType | |
+     // Using Default open record to define new fields
+    // results4["age"] = 52; // this dos not compile in closed recordType
+    // io:println(results4);
+    // anydata age2 = results4["age"];
+    // if age2 is int {
+    //    io:println("the listed age is :", age);
+    // } else {
+    //    io:println("I have no idea what the age is");
+    //}
+
+    // Adding rest field of type int
+
+
+    io:println("\nExamRecord5 Example:");
+    ExamResult5 results5 = {
+        mathsScore: 88,
+        physicsScore: 23
+    };
+    // This is a closed recordType | |
+    // with rest field of type int
+     // Using Default open record to define new fields
+    results5["BiologyScore"] = 82; // this dos not compile in closed recordType
+    io:println(results5);
+    int? biologyScore = results5["BiologyScore"];
+    if biologyScore is int {
+        io:println("Biology Score :", biologyScore);
+    } else {
+        io:println("BiologyScore is not present");
+    }
+
+    io:println("\nExample 6 - Subtyping");
+    Person p1;
+    Student s1 = { name: "john", age: 30, studentId: "W200530"};
+    p1 = s1;
+    io:println("Subtyping Student record into Personvariable");
+    io:println(p1);
+} 
+
+
+
+function getEnvirontment() {
+    io:println("----- getEnvirontment --------------\n\n");
+
+    string hostname = os:getEnv("HOSTNAME");
+    io:println("hostname: ", hostname);
+
+    string commandMode = os:getEnv("COMMAND_MODE");
+    io:println("commandMode: ", commandMode);
+
+    string user = os:getEnv("USER");
+    io:println("user: ", user);
+
+
+    
+
+
+
+    
 }
 
 type ExamResult2 [int, int, int];
